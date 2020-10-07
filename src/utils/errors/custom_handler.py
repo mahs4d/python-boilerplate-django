@@ -12,20 +12,15 @@ logger = logging.getLogger(__name__)
 
 def exception_handler(exc: Exception, context):
     if isinstance(exc, APIException):
-        return Response(data={
-            'code': exc.detail.code,
-            'message': exc.detail,
-        }, status=exc.status_code)
+        custom_api_error = CustomApiError(status_code=exc.status_code, message=exc.detail, code=exc.detail.code)
+        return custom_api_error.get_response()
 
     if isinstance(exc, CustomApiError):
-        return Response(data={
-            'code': exc.code,
-            'message': exc.message,
-        }, status=exc.status_code)
+        return exc.get_response()
 
     logger.error(exc, exc_info=True)
     return Response(data={
-        'code': 'internal_server_error',
+        'code': 'internal-server-error',
         'message': 'internal server error',
         'details': str(exc) if settings.DEBUG else None,
     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

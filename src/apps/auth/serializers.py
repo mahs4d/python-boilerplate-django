@@ -1,8 +1,12 @@
+from django.conf import settings
 from django.db.models import TextChoices
 from rest_framework import serializers
-from django.conf import settings
-from utils import validators
 
+from utils import validators
+from .models import Role
+
+
+# region token
 
 class GrantTypes(TextChoices):
     PASSWORD = 'password'
@@ -52,6 +56,10 @@ class TokensSerializer(serializers.Serializer):
     # todo: user = user_serializers.UserSerializer()
 
 
+# endregion
+
+# region otp
+
 class CreateOtpCodeInputSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=11, required=True)
 
@@ -60,3 +68,27 @@ class CreateOtpCodeInputSerializer(serializers.Serializer):
             raise serializers.ValidationError({'phone': 'phone is not in a valid format'})
 
         return value
+
+
+# endregion
+
+# region role
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['slug', 'name', 'permissions']
+
+
+class CreateRoleSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=True)
+    name = serializers.CharField(required=True)
+    permissions = serializers.ListField(child=serializers.CharField(), allow_empty=True, required=True)
+
+
+class UpdateRoleSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
+    permissions = serializers.ListField(child=serializers.CharField(), allow_empty=True, required=False)
+
+# endregion

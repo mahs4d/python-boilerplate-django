@@ -1,29 +1,31 @@
 import random
-from django.conf import settings
-from ..models import OtpCode
+from datetime import datetime, timedelta
 from typing import Optional
+
+from django.conf import settings
+
+from apps.core.decorators import optional_raise
 from apps.user import services as user_services
 from utils.errors import CustomApiError
 from .. import error_descriptors
-from datetime import datetime, timedelta
+from ..models import OtpCode
 
 
-def get_otp_code_for_user(user_id: int, *, raise_exception=True) -> Optional[OtpCode]:
+@optional_raise
+def get_otp_code_for_user(user_id: int) -> Optional[OtpCode]:
     """
     returns the last valid otp code for use saved in the database
     """
 
     try:
         unexpired_creation_time = datetime.now() - timedelta(**settings.OTP_CODE_DURATION)
-        otp_code = OtpCode.objects.get(user_id=user_id, creation_time__gte=unexpired_creation_time)
+        otp_code = OtpCode.objects.get(user_id=user_id, creation_time__gte=unexpired_creation_time, is_used=False)
         return otp_code
     except OtpCode.DoesNotExist:
-        if raise_exception:
-            raise CustomApiError(**error_descriptors.OTP_CODE_NOT_FOUND)
-        else:
-            return None
+        raise CustomApiError(**error_descriptors.OTP_CODE_NOT_FOUND)
 
 
+@optional_raise
 def create_otp_code(phone: str) -> None:
     """
     creates and sends the otp code for the user with specified phone number
@@ -41,12 +43,21 @@ def create_otp_code(phone: str) -> None:
     _send_otp_code(phone=phone, code=otp_code.code)
 
 
+def use_otp_code(otp_code: OtpCode) -> None:
+    """
+    marks otp code as used
+    """
+    
+    otp_code.is_used = True
+    otp_code.save()
+
+
 def _generate_random_code() -> str:
     """
     generates a random number as otp code (not saved to database)
     """
 
-    code = random.randrange(10 ** settings.OTP_CODE_LENGTH, 10 ** (settings.OTP_CODE_LENGTH - 1))
+    code = random.randrange(10 ** (settings.OTP_CODE_LENGTH - 1), 10 ** settings.OTP_CODE_LENGTH)
     return str(code)
 
 
@@ -55,4 +66,4 @@ def _send_otp_code(phone: str, code: str) -> None:
     sends the sms message (not implemented)
     """
 
-    raise NotImplementedError()
+    raise NotImplementedError('otp is not supported yet :)')

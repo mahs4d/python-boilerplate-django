@@ -9,7 +9,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'phone'
     objects = UserManager()
 
-    phone = models.CharField(verbose_name='Phone', max_length=11, unique=True, blank=False, null=False)
+    phone = models.CharField(verbose_name='Phone', max_length=11, unique=True, db_index=True, blank=False, null=False)
 
     is_admin = models.BooleanField(verbose_name='Is Admin', default=False)
     is_active = models.BooleanField(verbose_name='Is Active', default=True)
@@ -22,7 +22,7 @@ class User(AbstractBaseUser):
         super().save(*args, **kwargs)
 
         try:
-            profile = self.profile
+            _ = self.profile
         except Profile.DoesNotExist:
             profile = Profile(user_id=self.id)
             profile.save()

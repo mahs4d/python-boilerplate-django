@@ -1,6 +1,6 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.postgres import fields as postgres_fields
+from django.db import models
 
 
 class Role(models.Model):
@@ -26,6 +26,7 @@ class OtpCode(models.Model):
                              related_name='otp_codes', related_query_name='otp_code',
                              db_index=True, blank=False)
     code = models.CharField(verbose_name='otp code', max_length=settings.OTP_CODE_LENGTH, blank=False)
+    is_used = models.BooleanField(verbose_name='is used', db_index=True, default=False)
     creation_time = models.DateTimeField(verbose_name='creation time', auto_now=True, db_index=True, blank=False)
 
     class Meta:

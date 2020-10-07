@@ -1,3 +1,6 @@
+from rest_framework.response import Response
+
+
 class CustomApiError(Exception):
     """
     a general easily customizable exception for apis
@@ -5,7 +8,13 @@ class CustomApiError(Exception):
 
     def __init__(self, status_code: int, message: str, code: str):
         super().__init__(message)
-        
+
         self.status_code = status_code
         self.message = message
         self.code = code
+
+    def get_response(self):
+        return Response(data={
+            'message': self.message,
+            'code': self.code,
+        }, status=self.status_code)

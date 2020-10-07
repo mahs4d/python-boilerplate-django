@@ -1,7 +1,7 @@
 from utils.errors import CustomApiError
 from . import error_descriptors
-from .services import token as token_services
 from .services import role as role_services
+from .services import token as token_services
 
 
 def fill_user_info(get_response):
@@ -9,10 +9,10 @@ def fill_user_info(get_response):
         if 'Authorization' in request.headers:
             authorization_header = request.headers.get('Authorization')
 
-            if not authorization_header.starts_with('bearer '):
+            if not authorization_header.startswith('bearer ') and not authorization_header.startswith('Bearer '):
                 raise CustomApiError(**error_descriptors.INVALID_ACCESS_TOKEN)
 
-            token = authorization_header[:7]
+            token = authorization_header[7:]
             user_id, role_slugs = token_services.verify_access_token(token)
 
             request.is_authenticated = True

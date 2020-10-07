@@ -52,7 +52,7 @@ def _generate_token(user: User, requested_role_slugs: List[str] = None) -> dict:
         'user': user,
         'access_token': access_token,
         'refresh_token': refresh_token,
-        'token_type': 'bearer',
+        'token_type': 'Bearer',
         'expires_at': expires_at.timestamp(),
     }
 
@@ -84,7 +84,8 @@ def generate_tokens_with_otp(phone: str, code: str, requested_role_slugs: List[s
     otp_code = otp_services.get_otp_code_for_user(user_id=user.id, raise_exception=False)
     if not otp_code or otp_code.code != code:
         raise CustomApiError(**error_descriptors.INVALID_CREDENTIALS)
-
+    otp_services.use_otp_code(otp_code=otp_code)
+    
     return _generate_token(user=user, requested_role_slugs=requested_role_slugs)
 
 

@@ -1,6 +1,7 @@
 from functools import wraps
-from . import error_descriptors
+
 from utils.errors import CustomApiError
+from . import error_descriptors
 
 
 def require_authentication():
@@ -10,11 +11,11 @@ def require_authentication():
 
     def decorator(fn):
         @wraps(fn)
-        def wrapper(request, *args, **kwargs):
+        def wrapper(view, request, *args, **kwargs):
             if not request.is_authenticated:
                 raise CustomApiError(**error_descriptors.AUTHENTICATION_REQUIRED)
 
-            fn(request, *args, **kwargs)
+            return fn(view, request, *args, **kwargs)
 
         return wrapper
 
@@ -23,17 +24,17 @@ def require_authentication():
 
 def require_permission(permission: str):
     """
-    requires the request user to be: 1. authenticated 2. has specified permission
+    requires the request user to be: 1. authenticated 2. has the specified permission
     """
 
     def decorator(fn):
         @require_authentication()
         @wraps(fn)
-        def wrapper(request, *args, **kwargs):
-            if not request.user_permissions or permission not in request.user_permissions:
+        def wrapper(view, request, *args, **kwargs):
+            if permission not in request.user_permissions and 'admin' not in request.user_role_slugs:
                 raise CustomApiError(**error_descriptors.PERMISSION_DENIED)
 
-            fn(request, *args, **kwargs)
+            return fn(view, request, *args, **kwargs)
 
         return wrapper
 

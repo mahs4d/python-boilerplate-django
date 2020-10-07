@@ -1,11 +1,10 @@
 from typing import List, Optional
 
-from rest_framework import status
-
+from apps.core.decorators import optional_raise
 from utils import pagination
 from utils.errors import CustomApiError
-from .models import User
 from . import error_descriptors
+from .models import User
 
 
 def create_user(phone: str, is_admin: bool):
@@ -13,26 +12,34 @@ def create_user(phone: str, is_admin: bool):
     user.save()
 
 
-def get_users(page: int = 1) -> List[User]:
+def get_users_list(page: int = 1) -> List[User]:
+    """
+    returns paginated users list
+    """
+
     start, end = pagination.get_start_and_end(page)
-    return User.objects.all()[start:end]
+    return User.objects.all().prefetch_related(['profile'])[start:end]
 
 
-def get_user_by_id(user_id: int, *, raise_exception=True) -> Optional[User]:
+@optional_raise
+def get_user_by_id(user_id: int) -> Optional[User]:
+    """
+    returns user with specified id
+    """
+    
     try:
         return User.objects.get(pk=user_id)
     except User.DoesNotExist:
-        if raise_exception:
-            raise CustomApiError(**error_descriptors.USER_NOT_FOUND)
-        else:
-            return None
+        raise CustomApiError(**error_descriptors.USER_NOT_FOUND)
 
 
-def get_user_by_phone(phone: str, *, raise_exception=True) -> Optional[User]:
+@optional_raise
+def get_user_by_phone(phone: str) -> Optional[User]:
+    """
+    returns user with specified phone
+    """
+
     try:
         return User.objects.get(phone=phone)
     except User.DoesNotExist:
-        if raise_exception:
-            raise CustomApiError(**error_descriptors.USER_NOT_FOUND)
-        else:
-            return None
+        raise CustomApiError(**error_descriptors.USER_NOT_FOUND)
