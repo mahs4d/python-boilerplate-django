@@ -1,10 +1,12 @@
 # Django Rest Api Boilerplate
 
-- Multi Environment Settings
-- Logging
-- Error Handling
-
-- User/Profile Management
-- Authentication / Authorization
-- Postgres Database
-- Docker/Docker Compose
+- [ ] Authentication
+- [ ] Authentication Tests
+- [ ] User Management
+- [ ] Error Handling
+- [ ] Logging
+- [ ] Settings and Environments
+- [ ] Docker & Docker Compose
+- [ ] CI/CD
+- [ ] Multi Tenant
+- [ ] GraphQL Support
