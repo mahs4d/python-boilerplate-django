@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from apps.core.decorators import optional_raise
 from utils import pagination
-from utils.errors import CustomApiError
+from apps.core.error_helpers import CustomApiError
 from . import error_descriptors
 from .models import User
 

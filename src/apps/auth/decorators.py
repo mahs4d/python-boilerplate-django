@@ -1,6 +1,6 @@
 from functools import wraps
 
-from utils.errors import CustomApiError
+from apps.core.error_helpers import CustomApiError
 from . import error_descriptors
 
 

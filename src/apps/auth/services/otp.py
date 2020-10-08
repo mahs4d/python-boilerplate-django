@@ -6,7 +6,7 @@ from django.conf import settings
 
 from apps.core.decorators import optional_raise
 from apps.user import services as user_services
-from utils.errors import CustomApiError
+from apps.core.error_helpers import CustomApiError
 from .. import error_descriptors
 from ..models import OtpCode
 
@@ -47,7 +47,7 @@ def use_otp_code(otp_code: OtpCode) -> None:
     """
     marks otp code as used
     """
-    
+
     otp_code.is_used = True
     otp_code.save()
 

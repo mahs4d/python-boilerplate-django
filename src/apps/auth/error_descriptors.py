@@ -78,13 +78,13 @@ ROLE_NOT_FOUND = {
     'code': 'auth:role-not-found',
 }
 
-ROLE_RESERVED_SLUG = {
+RESERVED_ROLE_SLUG = {
     'status_code': status.HTTP_422_UNPROCESSABLE_ENTITY,
     'message': 'this role slug is reserved',
     'code': 'auth:role-reserved-slug',
 }
 
-ROLE_DUPLICATE_SLUG = {
+DUPLICATE_ROLE_SLUG = {
     'status_code': status.HTTP_422_UNPROCESSABLE_ENTITY,
     'message': 'role with same slug exists',
     'code': 'auth:role-duplicate-slug',

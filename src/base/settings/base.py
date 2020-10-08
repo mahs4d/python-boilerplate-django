@@ -101,7 +101,7 @@ WSGI_APPLICATION = 'base.wsgi.application'
 # region django rest framework
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'utils.errors.custom_handler.exception_handler'
+    'EXCEPTION_HANDLER': 'apps.core.error_helpers.exception_handler'
 }
 
 # endregion

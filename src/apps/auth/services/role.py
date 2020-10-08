@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from apps.core.decorators import optional_raise
 from utils import pagination
-from utils.errors import CustomApiError
+from apps.core.error_helpers import CustomApiError
 from .. import error_descriptors
 from ..models import Role
 
@@ -51,11 +51,11 @@ def create_role(slug: str, name: str, permissions: List[str]) -> Role:
     """
 
     if slug == 'admin':
-        raise CustomApiError(**error_descriptors.ROLE_RESERVED_SLUG)
+        raise CustomApiError(**error_descriptors.RESERVED_ROLE_SLUG)
 
     role_with_same_slug = get_role_by_slug(slug=slug, raise_exception=False)
     if role_with_same_slug:
-        raise CustomApiError(**error_descriptors.ROLE_DUPLICATE_SLUG)
+        raise CustomApiError(**error_descriptors.DUPLICATE_ROLE_SLUG)
 
     role = Role(slug=slug, name=name, permissions=permissions)
     role.save()

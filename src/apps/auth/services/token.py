@@ -4,9 +4,9 @@ from typing import List, Tuple
 import jwt
 from django.conf import settings
 
+from apps.core.error_helpers import CustomApiError
 from apps.user import services as user_services
 from apps.user.models import User
-from utils.errors import CustomApiError
 from . import otp as otp_services
 from . import role as roles_services
 from .. import error_descriptors
@@ -43,10 +43,10 @@ def _generate_token(user: User, requested_role_slugs: List[str] = None) -> dict:
     }, key=settings.AUTH_ACCESS_TOKEN_KEY, algorithm='HS256').decode('UTF-8')
 
     refresh_token = jwt.encode(payload={
-        'exp': datetime.now() + timedelta(**settings.AUTH_ACCESS_TOKEN_DURATION),
+        'exp': datetime.now() + timedelta(**settings.AUTH_REFRESH_TOKEN_DURATION),
         'sub': user.id,
         'roles': requested_role_slugs,
-    }, key=settings.AUTH_ACCESS_TOKEN_KEY, algorithm='HS256').decode('UTF-8')
+    }, key=settings.AUTH_REFRESH_TOKEN_KEY, algorithm='HS256').decode('UTF-8')
 
     return {
         'user': user,
@@ -57,7 +57,7 @@ def _generate_token(user: User, requested_role_slugs: List[str] = None) -> dict:
     }
 
 
-def generate_tokens_with_password(phone: str, password: str, requested_role_slugs: List[str]) -> dict:
+def _generate_tokens_with_password(phone: str, password: str, requested_role_slugs: List[str]) -> dict:
     """
     generates access token for the user with specified phone using provided password
     """
@@ -72,7 +72,7 @@ def generate_tokens_with_password(phone: str, password: str, requested_role_slug
     return _generate_token(user=user, requested_role_slugs=requested_role_slugs)
 
 
-def generate_tokens_with_otp(phone: str, code: str, requested_role_slugs: List[str]) -> dict:
+def _generate_tokens_with_otp(phone: str, code: str, requested_role_slugs: List[str]) -> dict:
     """
     generates access token for the user with specified phone using provided otp_code
     """
@@ -85,11 +85,11 @@ def generate_tokens_with_otp(phone: str, code: str, requested_role_slugs: List[s
     if not otp_code or otp_code.code != code:
         raise CustomApiError(**error_descriptors.INVALID_CREDENTIALS)
     otp_services.use_otp_code(otp_code=otp_code)
-    
+
     return _generate_token(user=user, requested_role_slugs=requested_role_slugs)
 
 
-def generate_tokens_with_refresh_token(refresh_token: str) -> dict:
+def _generate_tokens_with_refresh_token(refresh_token: str) -> dict:
     """
     generate a pair of access/refresh tokens from refresh token
     """
@@ -118,11 +118,11 @@ def generate_tokens_with_grant_type(grant_type: str, phone: str, requested_role_
     """
 
     if grant_type == 'password':
-        return generate_tokens_with_password(phone=phone, password=password, requested_role_slugs=requested_role_slugs)
+        return _generate_tokens_with_password(phone=phone, password=password, requested_role_slugs=requested_role_slugs)
     elif grant_type == 'otp':
-        return generate_tokens_with_otp(phone=phone, code=otp_code, requested_role_slugs=requested_role_slugs)
+        return _generate_tokens_with_otp(phone=phone, code=otp_code, requested_role_slugs=requested_role_slugs)
     elif grant_type == 'refresh_token':
-        return generate_tokens_with_refresh_token(refresh_token=refresh_token)
+        return _generate_tokens_with_refresh_token(refresh_token=refresh_token)
 
     raise CustomApiError(**error_descriptors.INVALID_GRANT_TYPE)
 

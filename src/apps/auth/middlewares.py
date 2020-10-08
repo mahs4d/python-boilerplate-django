@@ -1,10 +1,12 @@
-from utils.errors import CustomApiError
+from apps.core.decorators import middleware_error_handler
+from apps.core.error_helpers import CustomApiError
 from . import error_descriptors
 from .services import role as role_services
 from .services import token as token_services
 
 
 def fill_user_info(get_response):
+    @middleware_error_handler
     def middleware(request):
         if 'Authorization' in request.headers:
             authorization_header = request.headers.get('Authorization')
@@ -28,6 +30,7 @@ def fill_user_info(get_response):
 
 
 def fill_permission_info(get_response):
+    @middleware_error_handler
     def middleware(request):
         if request.is_authenticated:
             roles = role_services.get_roles_by_slug_list(request.user_role_slugs)

@@ -3,7 +3,7 @@ from typing import Tuple
 from django.conf import settings
 from rest_framework import status
 
-from utils.errors import CustomApiError
+from apps.core.error_helpers import CustomApiError
 
 
 def get_offset_and_limit(page: int) -> Tuple[int, int]:
