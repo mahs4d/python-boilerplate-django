@@ -1,0 +1,11 @@
+# IDE
+.vscode
+.idea
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Sqllite Database
+*.sqlite3

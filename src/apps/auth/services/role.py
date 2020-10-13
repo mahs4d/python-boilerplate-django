@@ -1,8 +1,9 @@
 from typing import List, Optional
 
 from apps.core.decorators import optional_raise
-from utils import pagination
 from apps.core.error_helpers import CustomApiError
+from apps.user.models import User
+from utils import pagination
 from .. import error_descriptors
 from ..models import Role
 
@@ -64,7 +65,7 @@ def create_role(slug: str, name: str, permissions: List[str]) -> Role:
 
 
 @optional_raise
-def update_role(slug: str, name: Optional[str], permissions: Optional[List[str]]) -> Role:
+def update_role(slug: str, name: Optional[str] = None, permissions: Optional[List[str]] = None) -> Role:
     """
     updates a role by slug
     """
@@ -90,3 +91,12 @@ def remove_role(slug: str) -> None:
 
     role = get_role_by_slug(slug=slug)
     role.delete()
+
+
+def add_role_to_user(role_slug: str, user_id: int) -> None:
+    role = get_role_by_slug(slug=role_slug)
+    role.users.add(user_id)
+
+
+def clear_user_roles(user: User) -> None:
+    user.roles.clear()

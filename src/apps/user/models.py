@@ -24,8 +24,8 @@ class User(AbstractBaseUser):
         try:
             _ = self.profile
         except Profile.DoesNotExist:
-            profile = Profile(user_id=self.id)
-            profile.save()
+            self.profile = Profile(user_id=self.id)
+            self.profile.save()
 
     def get_full_name(self):
         return f'{self.profile.first_name} {self.profile.last_name}'

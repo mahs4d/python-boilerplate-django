@@ -20,7 +20,7 @@ def fill_user_info(get_response):
             request.is_authenticated = True
             request.user_id = user_id
             request.user_role_slugs = role_slugs
-            request.is_admin = 'admin' in role_slugs
+            request.user_is_admin = 'admin' in role_slugs
         else:
             request.is_authenticated = False
 

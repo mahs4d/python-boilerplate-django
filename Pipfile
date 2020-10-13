@@ -12,6 +12,7 @@ djangorestframework = "*"
 django-cors-headers = "*"
 pyjwt = "*"
 psycopg2 = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"

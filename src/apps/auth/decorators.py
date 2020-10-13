@@ -1,4 +1,5 @@
 from functools import wraps
+from typing import Union, Callable
 
 from apps.core.error_helpers import CustomApiError
 from . import error_descriptors
@@ -22,7 +23,7 @@ def require_authentication():
     return decorator
 
 
-def require_permission(permission: str):
+def require_permission(permission: Union[str, Callable]):
     """
     requires the request user to be: 1. authenticated 2. has the specified permission
     """
@@ -31,8 +32,13 @@ def require_permission(permission: str):
         @require_authentication()
         @wraps(fn)
         def wrapper(view, request, *args, **kwargs):
-            if permission not in request.user_permissions and 'admin' not in request.user_role_slugs:
-                raise CustomApiError(**error_descriptors.PERMISSION_DENIED)
+            prms = permission
+            if callable(permission):
+                prms = permission(request, *args, **kwargs)
+
+            if prms is not None:
+                if prms not in request.user_permissions and not request.user_is_admin:
+                    raise CustomApiError(**error_descriptors.PERMISSION_DENIED)
 
             return fn(view, request, *args, **kwargs)
 

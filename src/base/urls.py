@@ -7,4 +7,5 @@ urlpatterns = [
     # project app urls
     path('', include('apps.core.urls')),
     path('', include('apps.auth.urls')),
+    path('', include('apps.user.urls')),
 ]

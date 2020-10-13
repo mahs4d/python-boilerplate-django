@@ -77,7 +77,7 @@ class CreateOtpCodeInputSerializer(serializers.Serializer):
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
-        fields = ['slug', 'name', 'permissions']
+        fields = ['slug', 'name', 'permissions', ]
 
 
 class CreateRoleSerializer(serializers.Serializer):
@@ -87,8 +87,8 @@ class CreateRoleSerializer(serializers.Serializer):
 
 
 class UpdateRoleSerializer(serializers.Serializer):
-    slug = serializers.CharField(required=False)
-    name = serializers.CharField(required=False)
-    permissions = serializers.ListField(child=serializers.CharField(), allow_empty=True, required=False)
+    name = serializers.CharField(allow_null=True, default=None, required=False)
+    permissions = serializers.ListField(child=serializers.CharField(), allow_empty=True, allow_null=True, default=None,
+                                        required=False)
 
 # endregion

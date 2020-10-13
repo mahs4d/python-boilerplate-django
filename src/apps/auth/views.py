@@ -82,8 +82,8 @@ class RoleDetailsView(APIView):
         input_serializer = auth_serializers.UpdateRoleSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
 
-        name = input_serializer.validated_data.get('name')
-        permissions = input_serializer.validated_data.get('permissions')
+        name = input_serializer.validated_data.get('name', None)
+        permissions = input_serializer.validated_data.get('permissions', None)
 
         role = role_services.update_role(slug=slug, name=name, permissions=permissions)
 
